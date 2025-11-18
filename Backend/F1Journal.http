@@ -1,0 +1,6 @@
+@F1Journal_HostAddress = http://localhost:5136
+
+GET {{F1Journal_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
