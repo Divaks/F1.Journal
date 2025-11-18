@@ -14,7 +14,7 @@ function Register({ onSwitchToLogin }) {
         setIsSubmitting(true); // Блокуємо кнопку
 
         try {
-            const response = await fetch('http://localhost:5136/api/users', { // Потрібно буде передати API_BASE_URL
+            const response = await fetch('https://f1-backend-63136702003.us-central1.run.app/api/users', { // Потрібно буде передати API_BASE_URL
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

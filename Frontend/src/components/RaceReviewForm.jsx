@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = 'http://localhost:5136';
+const API_BASE_URL = 'https://f1-backend-63136702003.us-central1.run.app';
 
 // ❗️ Це твоя СТАРА логіка, просто перенесена сюди
 function RaceReviewForm({ raceId, onReviewSubmit }) {

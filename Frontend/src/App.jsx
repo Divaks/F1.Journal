@@ -13,7 +13,7 @@ import AddDriverForm from "./components/AddDriverForm.jsx";
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = 'http://localhost:5136';
+const API_BASE_URL = 'https://f1-backend-63136702003.us-central1.run.app';
 
 // --- Компонент-обгортка для тостера ---
 const AppToaster = () => (
@@ -225,7 +225,7 @@ export default function App() {
                 if (selectedTeam && selectedTeam.drivers) {
                     const updatedDrivers = selectedTeam.drivers.filter(t => t.id !== driverId);
                     const updatedTeam = {...selectedTeam, teams: updatedDrivers};
-                    setSelectedSeason(updatedSTeam);
+                    setSelectedSeason(updatedTeam);
                 }
 
                 toast.success('Пілот успішно видалений.');

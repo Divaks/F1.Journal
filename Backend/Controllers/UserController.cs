@@ -8,12 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 
 namespace F1Journal.Controllers;
 
 [ApiController]
 [Route("api/users")]
+[EnableCors("AllowFrontend")]
 public class UserController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -53,8 +55,8 @@ public class UserController : ControllerBase
         CookieOptions cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Lax,
+            Secure = true,
+            SameSite = SameSiteMode.None,
             MaxAge = TimeSpan.FromDays(7)
         };
         
@@ -115,8 +117,8 @@ public class UserController : ControllerBase
         CookieOptions cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Lax,
+            Secure = true,
+            SameSite = SameSiteMode.None,
             MaxAge = TimeSpan.FromDays(-1)
         };   
         
