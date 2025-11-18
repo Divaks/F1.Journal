@@ -1,23 +1,20 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
+# ...
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["F1Journal.csproj", "./"]
+WORKDIR /src # Тепер /src - це робоча директорія
+
+# 1. Копіюємо .csproj для відновлення. Копіюємо у поточну директорію /src
+COPY ["F1Journal.csproj", "."] 
 RUN dotnet restore "F1Journal.csproj"
+
+# 2. Копіюємо решту файлів.
 COPY . .
-WORKDIR "/src/"
-RUN dotnet build "./F1Journal.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# 3. Виконання build і publish
+# Ми вже знаходимося у /src, де лежить F1Journal.csproj.
+RUN dotnet build "F1Journal.csproj" -c $BUILD_CONFIGURATION -o /app/build 
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./F1Journal.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "F1Journal.dll"]
+RUN dotnet publish "F1Journal.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# ...
