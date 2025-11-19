@@ -11,17 +11,18 @@ function AddSeasonForm({ onSeasonAdded, onCancel, API_BASE_URL }) {
         e.preventDefault();
         setError(null);
         setIsSubmitting(true);
+        const token = localStorage.getItem('authToken');
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/seasons`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     year: parseInt(year),
                 }),
-                credentials: 'include'
             });
 
             if (!response.ok) {

@@ -12,17 +12,20 @@ function RaceReviewForm({ raceId, onReviewSubmit }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
+        const token = localStorage.getItem('authToken');
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/reviews/race`, { // <--- Ендпоінт для відгуку на гонку
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     mark: mark,
                     description: description,
                     raceId: raceId,
                 }),
-                credentials: 'include'
             });
 
             if (!response.ok) {

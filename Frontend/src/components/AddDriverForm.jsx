@@ -10,13 +10,17 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
     const [selectedTeamId, setSelectedTeamId] = useState('');
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchTeams = async () => {
             setLoading(true);
+            const token = localStorage.getItem('authToken');
             try {
                 const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/teams/`, {
-                    credentials: 'include'
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
@@ -41,6 +45,7 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSubmitting) return;
 
         if (!selectedTeamId) {
             toast.error("Спочатку оберіть команду.");
@@ -54,12 +59,15 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
             teamId: selectedTeamId
         };
 
+        const token = localStorage.getItem('authToken');
         try {
             const response = await fetch(`${API_BASE_URL}/api/teams/${selectedTeamId}/drivers`, { // ❗️ Переконайся, що твій C# DriversController приймає [HttpPost]
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(newDriver),
-                credentials: 'include',
             });
 
             if (response.ok) {
@@ -72,6 +80,15 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
         } catch (e) {
             console.error("Помилка мережі при додаванні пілота:", e);
             toast.error("Не вдалося з'єднатися з сервером.");
+        }
+
+        setIsSubmitting(true);
+        try {
+            // ...
+        } catch (e) {
+            // ...
+        } finally {
+            setIsSubmitting(false); // Завжди скидаємо
         }
     };
 
@@ -193,8 +210,7 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
                         Скасувати
                     </button>
                     <button type="submit" /* disabled={isSubmitting} */ className="py-2 px-5 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all disabled:bg-zinc-600">
-                        {/* {isSubmitting ? 'Додавання...' : 'Додати Пілота'} */}
-                        Додати Пілота
+                        {isSubmitting ? 'Додавання...' : 'Додати Пілота'}                        Додати Пілота
                     </button>
                 </div>
             </form>

@@ -13,18 +13,21 @@ function AddTeamForm({ onTeamAdded, onCancel, API_BASE_URL, seasonId }) {
         e.preventDefault();
         setError(null);
         setIsSubmitting(true);
+        const token = localStorage.getItem('authToken');
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/teams`, { // Переконайся, що API_BASE_URL передається з App.jsx
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     name,
                     base,
                     teamPrincipal,
                     seasonId: seasonId,
-                }),
-                credentials: 'include'
+                })
             });
 
             if (!response.ok) {

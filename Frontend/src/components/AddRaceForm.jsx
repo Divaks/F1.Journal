@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 // Логіка залишається тією ж самою
-function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId, raceId }) {
+function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId }) {
     const [name, setName] = useState('');
     const [circuitName, setCircuitName] = useState('');
     const [raceDate, setRaceDate] = useState('');
@@ -13,18 +13,22 @@ function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId, raceId }) 
         e.preventDefault();
         setError(null);
         setIsSubmitting(true);
+        const token = localStorage.getItem('authToken');
+
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/races`, { // Переконайся, що API_BASE_URL передається з App.jsx
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     name,
                     circuitName,
                     raceDate,
                     seasonId: seasonId,
                 }),
-                credentials: 'include'
             });
 
             if (!response.ok) {

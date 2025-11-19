@@ -89,12 +89,27 @@ export default function App() {
         // --- ФУНКЦІЯ 1: Перевірка сесії ---
         const checkAuthStatus = async () => {
             setIsCheckingAuth(true);
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                setIsCheckingAuth(false);
+                return;
+            }
+
             try {
                 const response = await fetch(`${API_BASE_URL}/api/users/check-auth`, {
-                    credentials: 'include',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('authToken', data.token);
                     setToken("auth"); // Успіх!
+                } else if (response.status === 401) {
+                    // Якщо токен прострочений або недійсний
+                    localStorage.removeItem('authToken');
+                    setToken(null);
                 }
             } catch (e) {
                 console.error("Auth check failed", e);
@@ -107,8 +122,11 @@ export default function App() {
         // --- ФУНКЦІЯ 2: Завантаження сезонів ---
         const fetchSeasons = async () => {
             try {
+                const token = localStorage.getItem('authToken');
                 const response = await fetch(`${API_BASE_URL}/api/seasons`, {
-                    credentials: 'include'
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 // ❗️ ВИПРАВЛЕНА ЛОГІКА ОБРОБКИ ❗️
@@ -168,9 +186,12 @@ export default function App() {
     const handleDeleteRace = async (seasonId, raceId) => {
         if (!window.confirm("Ви впевнені, що хочете видалити цю гонку? ...")) return;
         try {
+            const token = localStorage.getItem('authToken');
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/races/${raceId}`, {
                 method: 'DELETE',
-                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (response.ok) {
                 if (selectedSeason && selectedSeason.races) {
@@ -191,9 +212,13 @@ export default function App() {
     const handleDeleteTeam = async (seasonId, teamId) => {
         if (!window.confirm("Ви впевнені, що хочете видалити цю команду? ...")) return;
         try {
+            const token = localStorage.getItem('authToken');
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/teams/${teamId}`, {
                 method: 'DELETE',
-                credentials: 'include',
+                headers: {
+                    // 2. Додати заголовок авторизації
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (response.ok) {
                 if (selectedSeason && selectedSeason.teams) {
@@ -215,9 +240,13 @@ export default function App() {
         if (!window.confirm("Ви впевнені, що хочете видалити цього пілота? ...")) return;
 
         try {
+            const token = localStorage.getItem('authToken');
             const response = await fetch(`${API_BASE_URL}/api/teams/${teamId}/drivers/${driverId}`, {
                 method: 'DELETE',
-                credentials: 'include',
+                headers: {
+                    // 2. Додати заголовок авторизації
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
             if (response.ok) {
@@ -241,9 +270,13 @@ export default function App() {
     const handleDeleteSeason = async (seasonId) => {
         if (!window.confirm("Ви впевнені, що хочете видалити цей сезон? ...")) return;
         try {
+            const token = localStorage.getItem('authToken');
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}`, {
                 method: 'DELETE',
-                credentials: 'include',
+                headers: {
+                    // 2. Додати заголовок авторизації
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (response.ok) {
                 setSeasons(currentSeasons => currentSeasons.filter(s => s.id !== seasonId));
@@ -283,10 +316,11 @@ export default function App() {
             const response = await fetch(`${API_BASE_URL}/api/users/login`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: emailData, password: passwordData}),
-                credentials: 'include'
+                body: JSON.stringify({email: emailData, password: passwordData})
             });
             if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('authToken', data.token);
                 setToken("auth");
                 setError(null);
             } else {
@@ -300,10 +334,14 @@ export default function App() {
 
     const logout = useCallback(async () => {
         try {
+            const token = localStorage.getItem('authToken');
             // 1. Викликаємо C# ендпоінт, щоб він видалив HttpOnly куку
             await fetch(`${API_BASE_URL}/api/users/logout`, {
                 method: 'POST',
-                credentials: 'include',
+                headers: {
+                    // 2. Додати заголовок авторизації
+                    'Authorization': `Bearer ${token}`
+                }
             });
         } catch (e) {
             console.warn('Logout request failed (this is often okay)', e);

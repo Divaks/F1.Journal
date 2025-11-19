@@ -22,9 +22,13 @@ function TeamReviewForm({ raceId, seasonId, onReviewSubmit }) {
                 return;
             }
             setIsLoading(true); // <--- Додав
+            const token = localStorage.getItem('authToken');
+
             try {
                 const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/teams`, {
-                    credentials: 'include'
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (!response.ok) throw new Error("Не вдалося завантажити команди");
 
@@ -49,17 +53,21 @@ function TeamReviewForm({ raceId, seasonId, onReviewSubmit }) {
             return;
         }
         setIsSubmitting(true);
+        const token = localStorage.getItem('authToken');
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/reviews/team`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     mark: mark,
                     description: description,
                     raceId: raceId,
                     teamId: selectedTeamId
                 }),
-                credentials: 'include'
             });
             if (!response.ok) {
                 const errorText = await response.text();

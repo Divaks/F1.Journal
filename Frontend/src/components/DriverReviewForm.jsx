@@ -16,6 +16,8 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
 
     useEffect(() => {
         const fetchDrivers = async () => {
+            const token = localStorage.getItem('authToken');
+
             if (!seasonId) {
                 toast.error("Помилка: невідомий ID сезону.");
                 setIsLoading(false);
@@ -23,7 +25,9 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
             }
             try {
                 const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/drivers`, {
-                    credentials: 'include'
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (!response.ok) throw new Error("Не вдалося завантажити пілотів");
 
@@ -49,18 +53,21 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
             return;
         }
         setIsSubmitting(true);
+        const token = localStorage.getItem('authToken');
         try {
             // ❗️ Твій C# ендпоінт з минулого разу: POST /api/reviews/driver
             const response = await fetch(`${API_BASE_URL}/api/reviews/driver`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     mark: mark,
                     description: description,
                     raceId: raceId,
                     driverId: selectedDriverId // <--- Головне поле
                 }),
-                credentials: 'include'
             });
             if (!response.ok) {
                 const errorText = await response.text();

@@ -84,6 +84,20 @@ public class UserController : ControllerBase
     [Authorize]
     public IActionResult CheckAuth()
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(); // На всякий випадок
+        }
+        
+        var user = _db.Users.Find(userId); 
+        if (user != null)
+        {
+            var newToken = GenerateJwtToken(user); // Генеруємо новий
+            return Ok(new { isAuthenticated = true, token = newToken }); // Повертаємо новий токен
+        }
+        
         return Ok(new { isAuthenticated = true });
     }
 
@@ -96,7 +110,6 @@ public class UserController : ControllerBase
         return Ok(new { message = "Logged out successfully" });
     }
 
-    // ======== Допоміжні методи ========
     private string GenerateJwtToken(User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
@@ -110,7 +123,9 @@ public class UserController : ControllerBase
                 new Claim(ClaimTypes.Email, user.Email)
             }),
             Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = creds
+            SigningCredentials = creds,
+            Issuer = _configuration["JwtSettings:Issuer"],
+            Audience = _configuration["JwtSettings:Audience"]
         };
         
         var tokenHandler = new JwtSecurityTokenHandler();

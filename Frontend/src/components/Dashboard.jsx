@@ -11,11 +11,15 @@ function Dashboard() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             setIsLoading(true);
+            const token = localStorage.getItem('authToken');
+
             try {
                 console.log("Запускаю fetch запит до API /dashboard...");
                 const response = await fetch(`${API_BASE_URL}/api/dashboard`, {
                     method: "GET",
-                    credentials: 'include',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
                 });
 
                 if (response.status === 401) {
