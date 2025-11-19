@@ -36,6 +36,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
+                    "https://localhost:5173/",
                     "https://f1journal.netlify.app"
                 )
                 .AllowAnyHeader()
