@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // (API_BASE_URL та логіка хуків залишаються без змін)
-const API_BASE_URL = 'https://f1-backend-63136702003.us-central1.run.app';
+const API_BASE_URL = 'https://f1-journal.onrender.com';
 
 function Dashboard() {
     const [dashboardResponse, setDashboardResponse] = useState(null);
