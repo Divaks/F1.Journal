@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import AddDriverForm from './AddDriverForm';
 import AddTeamForm from "./AddTeamForm.jsx";
 
 // Вся твоя логіка стану та 'fetch' залишається без змін
-export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, seasonId }) {
+export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, seasonId, onAddTeamClick }) {
 
     const [name, setName] = useState('');
     const [nationality, setNationality] = useState('');
@@ -216,7 +215,7 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
                         Скасувати
                     </button>
                     <button type="submit" /* disabled={isSubmitting} */ className="py-2 px-5 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all disabled:bg-zinc-600">
-                        {isSubmitting ? 'Додавання...' : 'Додати Пілота'}
+                        {isSubmitting ? 'Додавання...' : 'Додати Пілота'}                        Додати Пілота
                     </button>
                 </div>
             </form>
