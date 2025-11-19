@@ -138,19 +138,16 @@ export default function App() {
 
     function handleDriverAdded() {
         setIsAddingDriver(false);
-        setSelectedSeason(null);
         setFetchTrigger(p => p + 1);
     }
 
     function handleTeamAdded() {
         setIsAddingTeam(false);
         setFetchTrigger(prev => prev + 1);
-        setSelectedSeason(null);
     }
 
     function handleRaceAdded() {
         setIsAddingRace(false);
-        setSelectedSeason(null);
         setFetchTrigger(p => p + 1);
     }
 
@@ -362,23 +359,6 @@ export default function App() {
         );
     }
 
-    if (isAddingSeason) {
-        return <AddSeasonForm
-            onSeasonAdded={handleSeasonAdded}
-            onCancel={() => setIsAddingSeason(false)}
-            API_BASE_URL={API_BASE_URL}
-        />;
-    }
-
-    if (isAddingRace && selectedSeason) {
-        return <AddRaceForm
-            onRaceAdded={handleRaceAdded}
-            onCancel={() => setIsAddingRace(false)}
-            API_BASE_URL={API_BASE_URL}
-            seasonId={selectedSeason.id}
-        />;
-    }
-
     if (isAddingTeam && selectedSeason && selectedSeason.id) {
         return <AddTeamForm
             onTeamAdded={handleTeamAdded}
@@ -398,13 +378,21 @@ export default function App() {
         />
     }
 
-    if (isAddingDriver && selectedSeason && !selectedTeam) {
-        return <AddTeamForm
-            onTeamAdded={handleTeamAdded}
-            onCancel={() => setIsAddingTeam(false)}
+    if (isAddingRace && selectedSeason) {
+        return <AddRaceForm
+            onRaceAdded={handleRaceAdded}
+            onCancel={() => setIsAddingRace(false)}
             API_BASE_URL={API_BASE_URL}
             seasonId={selectedSeason.id}
-        />
+        />;
+    }
+
+    if (isAddingSeason) {
+        return <AddSeasonForm
+            onSeasonAdded={handleSeasonAdded}
+            onCancel={() => setIsAddingSeason(false)}
+            API_BASE_URL={API_BASE_URL}
+        />;
     }
 
     if (!seasons) {
