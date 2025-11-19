@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import AddDriverForm from './AddDriverForm';
+import AddTeamForm from "./AddTeamForm.jsx";
 
 // Вся твоя логіка стану та 'fetch' залишається без змін
-export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, seasonId, onAddTeamClick }) {
+export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, seasonId }) {
 
     const [name, setName] = useState('');
     const [nationality, setNationality] = useState('');
@@ -137,6 +139,10 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
                     </div>
                 </div>
             );
+        }
+
+        if(onAddTeamClick){
+            return <AddTeamForm onAddTeamClick={onAddTeamClick} />
         }
 
         // 3. Основна форма (якщо команди є)
