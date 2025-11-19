@@ -1,34 +1,27 @@
 import React, { useState } from 'react';
-import RaceReviewForm from './RaceReviewForm.jsx'; // <--- Нам знадобиться цей файл
-import DriverReviewForm from './DriverReviewForm.jsx'; // <--- і цей
-import TeamReviewForm from './TeamReviewForm.jsx'; // <--- і цей
+import RaceReviewForm from './RaceReviewForm.jsx';
+import DriverReviewForm from './DriverReviewForm.jsx';
+import TeamReviewForm from './TeamReviewForm.jsx';
 
-// Та сама допоміжна функція для дати
 const formatDate = (dateString) => {
     if (!dateString) return "---";
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString("uk-UA", options);
 };
 
-// 'race', 'onBackToRaces', 'onReviewSubmit' - ті ж самі пропси
-// ❗️ ВАЖЛИВО: Ми припускаємо, що 'race' тепер містить 'seasonId'
 function ReviewPage({ race, onBackToRaces, onReviewSubmit }) {
 
-    // НОВИЙ СТАН: Керує тим, яка вкладка/форма активна
-    const [activeTab, setActiveTab] = useState('race'); // 'race', 'drivers', 'teams'
+    const [activeTab, setActiveTab] = useState('race');
 
-    // Функція для стилізації активної вкладки
     const getTabClass = (tabName) => {
         return activeTab === tabName
-            ? "border-b-2 border-red-600 text-gray-100" // Активна вкладка
-            : "border-transparent text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"; // Неактивна
+            ? "border-b-2 border-red-600 text-gray-100"
+            : "border-transparent text-zinc-400 hover:border-zinc-500 hover:text-zinc-200";
     };
 
     return (
-        // Контейнер з обмеженням ширини (max-w-4xl, бо контенту буде більше)
         <div className="max-w-4xl mx-auto">
 
-            {/* 1. Кнопка "Назад" (той самий стиль) */}
             <button
                 className="mb-6 text-zinc-400 font-medium hover:text-white transition-colors"
                 onClick={onBackToRaces}
@@ -36,7 +29,6 @@ function ReviewPage({ race, onBackToRaces, onReviewSubmit }) {
                 &larr; Назад до списку гонок
             </button>
 
-            {/* 2. Заголовок (той самий стиль) */}
             <h1 className="text-4xl font-bold text-gray-100 mb-2">
                 {race.name}
             </h1>
@@ -44,7 +36,6 @@ function ReviewPage({ race, onBackToRaces, onReviewSubmit }) {
                 {formatDate(race.raceDate)}
             </p>
 
-            {/* 3. НОВА НАВІГАЦІЯ ПО ВКЛАДКАХ */}
             <div className="border-b border-zinc-800 mb-8">
                 <nav className="flex gap-6 sm:gap-8 -mb-px">
                     <button
@@ -68,7 +59,6 @@ function ReviewPage({ race, onBackToRaces, onReviewSubmit }) {
                 </nav>
             </div>
 
-            {/* 4. УМОВНИЙ РЕНДЕРИНГ ФОРМ */}
             <div>
                 {activeTab === 'race' && (
                     <RaceReviewForm
@@ -80,7 +70,7 @@ function ReviewPage({ race, onBackToRaces, onReviewSubmit }) {
                 {activeTab === 'drivers' && (
                     <DriverReviewForm
                         raceId={race.id}
-                        seasonId={race.seasonId} // <--- ❗️ ВАЖЛИВО! Передаємо ID сезону
+                        seasonId={race.seasonId}
                         onReviewSubmit={onReviewSubmit}
                     />
                 )}
@@ -88,7 +78,7 @@ function ReviewPage({ race, onBackToRaces, onReviewSubmit }) {
                 {activeTab === 'teams' && (
                     <TeamReviewForm
                         raceId={race.id}
-                        seasonId={race.seasonId} // <--- ❗️ ВАЖЛИВО! Передаємо ID сезону
+                        seasonId={race.seasonId}
                         onReviewSubmit={onReviewSubmit}
                     />
                 )}

@@ -1,10 +1,7 @@
 import React from "react";
 
-
-// Приймаємо ті ж самі пропси
 function SeasonList({ seasons, onSeasonClick, onAddSeasonClick, onDeleteSeasonClick }) {
 
-    // Якщо сезонів немає, показуємо гарне повідомлення
     if (!seasons || seasons.length === 0) {
         return (
             <div className="text-center py-20">
@@ -24,16 +21,13 @@ function SeasonList({ seasons, onSeasonClick, onAddSeasonClick, onDeleteSeasonCl
         );
     }
 
-    // Якщо сезони є, показуємо їх
     return (
         <>
-            {/* 1. Рядок заголовка та кнопки "Додати" */}
             <div className="flex justify-between items-center mb-6 sm:mb-8">
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-100">
                     Оберіть сезон:
                 </h2>
 
-                {/* 2. Кнопка "Додати" у нашому фірмовому стилі */}
                 <button
                     onClick={onAddSeasonClick}
                     className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
@@ -42,11 +36,6 @@ function SeasonList({ seasons, onSeasonClick, onAddSeasonClick, onDeleteSeasonCl
                 </button>
             </div>
 
-            {/* 3. Адаптивна сітка для карток сезонів */}
-            {/* - 1 колонка на мобільних
-                   - 2 колонки на середніх екранах (md)
-                   - 3 колонки на великих екранах (lg)
-            */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 {seasons.map((season) => (
@@ -62,7 +51,6 @@ function SeasonList({ seasons, onSeasonClick, onAddSeasonClick, onDeleteSeasonCl
                         onClick={() => onSeasonClick(season)}
                     >
                         <div className="flex justify-between items-start">
-                            {/* Блок з інформацією */}
                             <div>
                                 <h3 className="text-3xl font-bold text-gray-100 mb-1 group-hover:text-white">
                                     {season.year}
@@ -72,7 +60,6 @@ function SeasonList({ seasons, onSeasonClick, onAddSeasonClick, onDeleteSeasonCl
                                 </p>
                             </div>
 
-                            {/* ❗️ ОНОВЛЕНА КНОПКА ВИДАЛЕННЯ ❗️ */}
                             <button
                                 className="py-1 px-3
                            bg-zinc-800 text-zinc-400 text-xs font-semibold rounded-full
@@ -81,8 +68,8 @@ function SeasonList({ seasons, onSeasonClick, onAddSeasonClick, onDeleteSeasonCl
                            transition-all duration-300
                            hover:!opacity-100 hover:bg-red-600 hover:text-white hover:border-red-500"
                                 onClick={(e) => {
-                                    e.stopPropagation(); // Це ти вже знаєш, молодець!
-                                    onDeleteSeasonClick(season.id); // Потрібно буде створити цю функцію в App.jsx
+                                    e.stopPropagation();
+                                    onDeleteSeasonClick(season.id);
                                 }}
                             >
                                 Видалити

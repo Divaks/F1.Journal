@@ -4,13 +4,11 @@ import toast from 'react-hot-toast';
 const API_BASE_URL = 'https://f1-journal.onrender.com';
 
 function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
-    // Стани для форми
     const [selectedDriverId, setSelectedDriverId] = useState('');
     const [mark, setMark] = useState(5);
     const [description, setDescription] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Стани для завантаження даних
     const [drivers, setDrivers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -34,7 +32,7 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
                 const data = await response.json();
                 setDrivers(data);
                 if (data.length > 0) {
-                    setSelectedDriverId(data[0].id); // Обираємо першого за замовчуванням
+                    setSelectedDriverId(data[0].id);
                 }
             } catch (e) {
                 toast.error(e.message);
@@ -43,9 +41,8 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
             }
         };
         fetchDrivers();
-    }, [seasonId]); // Залежність від 'seasonId'
+    }, [seasonId]);
 
-    // ❗️ ТВОЯ ЛОГІКА handleSubmit
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedDriverId) {
@@ -55,7 +52,6 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
         setIsSubmitting(true);
         const token = localStorage.getItem('authToken');
         try {
-            // ❗️ Твій C# ендпоінт з минулого разу: POST /api/reviews/driver
             const response = await fetch(`${API_BASE_URL}/api/reviews/driver`, {
                 method: "POST",
                 headers: {
@@ -66,7 +62,7 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
                     mark: mark,
                     description: description,
                     raceId: raceId,
-                    driverId: selectedDriverId // <--- Головне поле
+                    driverId: selectedDriverId
                 }),
             });
             if (!response.ok) {
@@ -90,7 +86,6 @@ function DriverReviewForm({ raceId, seasonId, onReviewSubmit }) {
         return <p className="text-zinc-400 text-center">У цьому сезоні ще немає пілотів. Спочатку додайте їх у 'Панелі Управління Сезоном'.</p>
     }
 
-    // Дизайн форми
     return (
         <form onSubmit={handleSubmit} className="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col gap-6">
             <h2 className="text-2xl font-bold text-gray-100">Залишити відгук на пілота</h2>

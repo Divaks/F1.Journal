@@ -4,13 +4,11 @@ import toast from 'react-hot-toast';
 const API_BASE_URL = 'https://f1-journal.onrender.com';
 
 function TeamReviewForm({ raceId, seasonId, onReviewSubmit }) {
-    // Стани для форми
     const [selectedTeamId, setSelectedTeamId] = useState('');
     const [mark, setMark] = useState(5);
     const [description, setDescription] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Стани для завантаження даних
     const [teams, setTeams] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 

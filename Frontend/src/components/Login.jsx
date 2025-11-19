@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import toast from 'react-hot-toast';
 
 function Login({ onLogin, onSwitchToRegister }) {
     const [email, setEmail] = useState('');
@@ -11,10 +10,8 @@ function Login({ onLogin, onSwitchToRegister }) {
         setIsSubmitting(true);
 
         try {
-            // onLogin - це проп з App.jsx
             await onLogin(email, password);
         } catch (error) {
-            // помилка обробляється всередині onLogin в App.jsx через toast
         } finally {
             setIsSubmitting(false);
         }

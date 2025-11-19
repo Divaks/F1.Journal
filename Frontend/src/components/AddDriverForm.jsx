@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import AddTeamForm from "./AddTeamForm.jsx";
 
-// Вся твоя логіка стану та 'fetch' залишається без змін
 export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, seasonId, onAddTeamClick }) {
 
     const [name, setName] = useState('');
@@ -60,9 +58,10 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
             teamId: selectedTeamId
         };
 
+        setIsSubmitting(true);
         const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`${API_BASE_URL}/api/teams/${selectedTeamId}/drivers`, { // ❗️ Переконайся, що твій C# DriversController приймає [HttpPost]
+            const response = await fetch(`${API_BASE_URL}/api/teams/${selectedTeamId}/drivers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,21 +80,11 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
         } catch (e) {
             console.error("Помилка мережі при додаванні пілота:", e);
             toast.error("Не вдалося з'єднатися з сервером.");
-        }
-
-        setIsSubmitting(true);
-        try {
-            // ...
-        } catch (e) {
-            // ...
         } finally {
-            setIsSubmitting(false); // Завжди скидаємо
+            setIsSubmitting(false);
         }
     };
 
-    // --- РЕНДЕРИНГ ---
-
-    // Функція для рендерингу ВМІСТУ картки
     const renderContent = () => {
 
         // 1. Стан Завантаження
@@ -108,7 +97,6 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
             );
         }
 
-        // 2. Стан "Немає команд" (твій дизайн)
         if (teams.length === 0) {
             return (
                 <div className="text-center">
@@ -121,10 +109,9 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
                     <p className="text-zinc-400 mb-6">
                         Щоб додати пілота, спочатку створіть хоча б одну команду.
                     </p>
-                    {/* Кнопки з виправленим відступом */}
                     <div className="flex flex-col gap-4 mt-8">
                         <button
-                            onClick={onAddTeamClick} // Викликаємо проп, переданий з App.jsx
+                            onClick={onAddTeamClick}
                             className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-xl hover:bg-red-700 transition-all focus:ring-2 focus:ring-red-500"
                         >
                             + Додати Команду
@@ -140,11 +127,9 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
             );
         }
 
-        // 3. Основна форма (якщо команди є)
         return (
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
-                {/* Заголовок всередині форми */}
                 <h2 className="text-3xl font-bold text-center text-gray-100 mb-4">
                     Додати Пілота
                 </h2>
@@ -218,8 +203,6 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
         );
     };
 
-    // --- ГОЛОВНИЙ RETURN КОМПОНЕНТА ---
-    // (Повноекранний контейнер + Картка + Вміст)
     return (
         <div className="min-h-screen bg-zinc-950 text-gray-200 flex flex-col justify-center items-center p-4">
             <div className="w-full max-w-lg bg-zinc-900 rounded-2xl shadow-2xl p-8 border border-zinc-800">

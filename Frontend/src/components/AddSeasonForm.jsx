@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
-// Логіка залишається тією ж самою
 function AddSeasonForm({ onSeasonAdded, onCancel, API_BASE_URL }) {
     const [year, setYear] = useState('');
     const [error, setError] = useState(null);
@@ -27,16 +26,13 @@ function AddSeasonForm({ onSeasonAdded, onCancel, API_BASE_URL }) {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                // Спробуємо розпарсити помилку, якщо це JSON від валідації
                 try {
                     const errorJson = JSON.parse(errorText);
-                    // Якщо валідація (наприклад, "Year" required)
                     if (errorJson.errors && errorJson.errors.Year) {
                         throw new Error(errorJson.errors.Year[0]);
                     }
                     throw new Error(errorJson.title || errorText);
                 } catch {
-                    // Якщо це не JSON, просто показуємо текст
                     throw new Error(errorText || "Помилка при створенні сезону");
                 }
             }
@@ -52,18 +48,14 @@ function AddSeasonForm({ onSeasonAdded, onCancel, API_BASE_URL }) {
     };
 
     return (
-        // 1. Повноекранний фон, як у Login
         <div className="min-h-screen bg-zinc-950 text-gray-200 flex flex-col justify-center items-center p-4">
 
-            {/* 2. Картка форми (max-w-md, бо форма проста) */}
             <div className="w-full max-w-md bg-zinc-900 rounded-2xl shadow-2xl p-8 border border-zinc-800">
 
-                {/* 3. Заголовок */}
                 <h2 className="text-3xl font-bold text-center text-gray-100 mb-8">
                     Додати новий сезон
                 </h2>
 
-                {/* 4. Форма */}
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
                     <div>
@@ -78,12 +70,11 @@ function AddSeasonForm({ onSeasonAdded, onCancel, API_BASE_URL }) {
                             value={year}
                             onChange={(e) => setYear(e.target.value)}
                             min="1950"
-                            max="2100" // Або актуальний рік + 1
+                            max={new Date().getFullYear()}
                             required
                         />
                     </div>
 
-                    {/* 5. Кнопки "Скасувати" та "Створити" */}
                     <div className="flex justify-end gap-4 mt-4">
                         <button
                             type="button"

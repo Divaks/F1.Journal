@@ -1,44 +1,37 @@
 import React, { useState } from 'react';
 
-// Та сама допоміжна функція для дати
 const formatDate = (dateString) => {
     if (!dateString) return "---";
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString("uk-UA", options);
 };
 
-// ❗️ КОМПОНЕНТ ТЕПЕР ПРИЙМАЄ НОВІ ПРОПСИ
 function RaceList({
                       season,
                       onBackList,
                       onRaceClick,
                       onAddRaceClick,
                       onDeleteRaceClick,
-                      onAddTeamClick,     // <--- НОВИЙ ПРОП
-                      onDeleteTeamClick,  // <--- НОВИЙ ПРОП
-                      onAddDriverClick,   // <--- НОВИЙ ПРОП
+                      onAddTeamClick,
+                      onDeleteTeamClick,
+                      onAddDriverClick,
                       onDeleteDriverClick
-                      // <--- НОВИЙ ПРОП
                   }) {
 
-    // НОВИЙ СТАН: Керує тим, яка вкладка активна
-    const [activeTab, setActiveTab] = useState('races'); // 'races', 'teams', 'drivers'
+    const [activeTab, setActiveTab] = useState('races');
 
-    // Функція для стилізації активної вкладки
     const getTabClass = (tabName) => {
         return activeTab === tabName
-            ? "border-b-2 border-red-600 text-gray-100" // Активна
-            : "border-transparent text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"; // Неактивна
+            ? "border-b-2 border-red-600 text-gray-100"
+            : "border-transparent text-zinc-400 hover:border-zinc-500 hover:text-zinc-200";
     };
 
-    // Отримуємо всіх пілотів з усіх команд (для вкладки "Пілоти")
     const allDrivers = season.teams?.flatMap(team =>
         team.drivers.map(driver => ({ ...driver, teamId: team.id }))
     ) || [];
 
     return (
         <>
-            {/* 1. Блок заголовка (без змін) */}
             <div className="flex justify-between items-center mb-6 sm:mb-8">
                 <div className="flex items-center gap-4">
                     <button
@@ -54,7 +47,6 @@ function RaceList({
                 </div>
             </div>
 
-            {/* 2. НОВА НАВІГАЦІЯ ПО ВКЛАДКАХ */}
             <div className="border-b border-zinc-800 mb-8">
                 <nav className="flex gap-6 sm:gap-8 -mb-px">
                     <button
@@ -78,9 +70,6 @@ function RaceList({
                 </nav>
             </div>
 
-            {/* 3. УМОВНИЙ РЕНДЕРИНГ КОНТЕНТУ ВКЛАДОК */}
-
-            {/* ---------- ВКЛАДКА "ГОНКИ" ---------- */}
             {activeTab === 'races' && (
                 <section>
                     <div className="flex justify-end mb-6">
@@ -106,9 +95,8 @@ function RaceList({
                                 Створіть гонку, аби робити відгуки
                             </p>
 
-                            {/* Кнопка Call-to-Action (CTA) */}
                             <button
-                                onClick={onAddRaceClick} // <-- Припускаємо, що цей проп існує
+                                onClick={onAddRaceClick}
                                 className="px-8 py-3 bg-red-600 text-white text-lg font-semibold rounded-lg shadow-xl hover:bg-red-700 transition-all focus:ring-2 focus:ring-red-500"
                             >
                                 + Створити першу гонку
@@ -134,12 +122,11 @@ function RaceList({
                 </section>
             )}
 
-            {/* ---------- ВКЛАДКА "КОМАНДИ" ---------- */}
             {activeTab === 'teams' && (
                 <section>
                     <div className="flex justify-end mb-6">
                         <button
-                            onClick={onAddTeamClick} // <--- Тобі потрібно буде передати цей проп
+                            onClick={onAddTeamClick}
                             className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all"
                         >
                             + Додати команду
@@ -160,9 +147,11 @@ function RaceList({
                                 Для того, щоб додати пілотів та результати, спочатку створіть команду.
                             </p>
 
-                            {/* Кнопка Call-to-Action (CTA) */}
                             <button
-                                onClick={onAddTeamClick} // <-- Припускаємо, що цей проп існує
+                                onClick={() => {
+                                    console.log("КНОПКА НАТИСНУТА!");
+                                }}
+
                                 className="px-8 py-3 bg-red-600 text-white text-lg font-semibold rounded-lg shadow-xl hover:bg-red-700 transition-all focus:ring-2 focus:ring-red-500"
                             >
                                 + Створити першу команду
@@ -181,7 +170,7 @@ function RaceList({
                                         ) : <li>Пілотів не додано</li>}
                                     </ul>
                                     <button className="mt-4 text-xs text-red-400 hover:text-red-300 transition-colors"
-                                            onClick={(e) => { e.stopPropagation(); onDeleteTeamClick(season.id, team.id); /* onDeleteTeamClick(team.id); */ }}>
+                                            onClick={(e) => { e.stopPropagation(); onDeleteTeamClick(season.id, team.id);}}>
                                         Видалити команду
                                     </button>
                                 </div>
@@ -191,12 +180,11 @@ function RaceList({
                 </section>
             )}
 
-            {/* ---------- ВКЛАДКА "ПІЛОТИ" ---------- */}
             {activeTab === 'drivers' && (
                 <section>
                     <div className="flex justify-end mb-6">
                         <button
-                            onClick={onAddDriverClick} // <--- Тобі потрібно буде передати цей проп
+                            onClick={onAddDriverClick}
                             className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all"
                         >
                             + Додати пілота
@@ -217,9 +205,8 @@ function RaceList({
                                 Для того, щоб додати пілотів та результати, спочатку створіть команду.
                             </p>
 
-                            {/* Кнопка Call-to-Action (CTA) */}
                             <button
-                                onClick={onAddDriverClick} // <-- Припускаємо, що цей проп існує
+                                onClick={onAddDriverClick}
                                 className="px-8 py-3 bg-red-600 text-white text-lg font-semibold rounded-lg shadow-xl hover:bg-red-700 transition-all focus:ring-2 focus:ring-red-500"
                             >
                                 + Створити першого пілота
@@ -230,7 +217,6 @@ function RaceList({
                                 <div key={driver.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                                     <h3 className="text-xl font-semibold text-gray-100">{driver.name}</h3>
                                     <p className="text-sm text-zinc-400">#{driver.driverNumber} | {driver.nationality}</p>
-                                    {/* <p className="text-sm text-zinc-500 mt-2">Команда: {driver.team.name}</p> <- Потребує складнішого масиву */}
                                     <button className="mt-4 text-xs text-red-400 hover:text-red-300 transition-colors"
                                             onClick={(e) => { e.stopPropagation(); onDeleteDriverClick(driver.teamId, driver.id); }}>
                                         Видалити пілота

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
-// Логіка залишається тією ж самою
 function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId }) {
     const [name, setName] = useState('');
     const [circuitName, setCircuitName] = useState('');
@@ -47,25 +46,20 @@ function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId }) {
     };
 
     return (
-        // 1. Повноекранний фон, як у Login/Register
         <div className="min-h-screen bg-zinc-950 text-gray-200 flex flex-col justify-center items-center p-4">
 
-            {/* 2. Картка форми */}
             <div className="w-full max-w-lg bg-zinc-900 rounded-2xl shadow-2xl p-8 border border-zinc-800">
 
-                {/* 3. Заголовок */}
                 <h2 className="text-3xl font-bold text-center text-gray-100 mb-8">
                     Додати нову гонку
                 </h2>
 
-                {/* Повідомлення про помилку (якщо є) */}
                 {error && (
                     <p className="text-red-500 text-center mb-6 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
                         {error}
                     </p>
                 )}
 
-                {/* 4. Форма зі стилізованими полями */}
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
                     <div>
@@ -108,12 +102,10 @@ function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId }) {
                             value={raceDate}
                             onChange={(e) => setRaceDate(e.target.value)}
                             required
-                            // Додаємо 'placeholder', щоб поле було гарним, поки дата не обрана
                             className="w-full p-3 bg-zinc-800 text-gray-100 rounded-lg border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-red-600 transition-all [color-scheme:dark]"
                         />
                     </div>
 
-                    {/* 5. Кнопки "Скасувати" та "Створити" */}
                     <div className="flex justify-end gap-4 mt-4">
                         <button
                             type="button"

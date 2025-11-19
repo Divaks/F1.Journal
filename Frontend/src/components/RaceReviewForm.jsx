@@ -3,7 +3,6 @@ import toast from 'react-hot-toast';
 
 const API_BASE_URL = 'https://f1-journal.onrender.com';
 
-// ❗️ Це твоя СТАРА логіка, просто перенесена сюди
 function RaceReviewForm({ raceId, onReviewSubmit }) {
     const [mark, setMark] = useState(5);
     const [description, setDescription] = useState("");
@@ -15,7 +14,7 @@ function RaceReviewForm({ raceId, onReviewSubmit }) {
         const token = localStorage.getItem('authToken');
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/reviews/race`, { // <--- Ендпоінт для відгуку на гонку
+            const response = await fetch(`${API_BASE_URL}/api/reviews/race`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -43,7 +42,6 @@ function RaceReviewForm({ raceId, onReviewSubmit }) {
         }
     };
 
-    // Дизайн форми (той самий, що ми робили)
     return (
         <form onSubmit={handleSubmit} className="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col gap-6">
             <h2 className="text-2xl font-bold text-gray-100">Залишити відгук на гонку</h2>

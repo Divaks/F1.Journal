@@ -15,7 +15,6 @@ import toast from 'react-hot-toast';
 
 const API_BASE_URL = 'https://f1-journal.onrender.com';
 
-// --- Компонент-обгортка для тостера ---
 const AppToaster = () => (
     <Toaster
         position="bottom-right"
@@ -35,8 +34,6 @@ const AppToaster = () => (
     />
 );
 
-// --- Компонент-обгортка для станів завантаження/помилок ---
-// (Я зберіг твій renderLoading та екран помилки тут)
 const AppStateScreen = ({ message, isError = false, onRetry }) => (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4 text-center">
         {isError ? (
@@ -59,18 +56,14 @@ const AppStateScreen = ({ message, isError = false, onRetry }) => (
     </div>
 );
 
-
-// --- ГОЛОВНИЙ КОМПОНЕНТ ---
 export default function App() {
-
-    // --- СТАНИ ---
     const [seasons, setSeasons] = useState(null);
     const [selectedSeason, setSelectedSeason] = useState(null);
     const [selectedRace, setSelectedRace] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [error, setError] = useState(null);
     const [token, setToken] = useState(null);
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true); // <--- Наш "воротар"
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [isRegistering, setIsRegistering] = useState(false);
     const [isViewingDashboard, setIsViewingDashboard] = useState(false);
     const [isAddingSeason, setIsAddingSeason] = useState(false);
@@ -79,14 +72,8 @@ export default function App() {
     const [isAddingDriver, setIsAddingDriver] = useState(false);
     const [isAddingTeam, setIsAddingTeam] = useState(false);
 
-    // --- ЛОГІКА: АВТЕНТИФІКАЦІЯ ТА ЗАВАНТАЖЕННЯ ДАНИХ ---
-
-    // ❗️❗️❗️ ОСЬ ВИПРАВЛЕНИЙ USEEFFECT ❗️❗️❗️
-    // Ми об'єднуємо ВСЮ логіку завантаження в один хук,
-    // щоб гарантувати правильну послідовність
     useEffect(() => {
 
-        // --- ФУНКЦІЯ 1: Перевірка сесії ---
         const checkAuthStatus = async () => {
             setIsCheckingAuth(true);
             const token = localStorage.getItem('authToken');
@@ -107,19 +94,16 @@ export default function App() {
                     localStorage.setItem('authToken', data.token);
                     setToken("auth"); // Успіх!
                 } else if (response.status === 401) {
-                    // Якщо токен прострочений або недійсний
                     localStorage.removeItem('authToken');
                     setToken(null);
                 }
             } catch (e) {
                 console.error("Auth check failed", e);
-                // setToken(null) тут не потрібен, бо він і так null
             } finally {
-                setIsCheckingAuth(false); // Завершуємо перевірку
+                setIsCheckingAuth(false);
             }
         };
 
-        // --- ФУНКЦІЯ 2: Завантаження сезонів ---
         const fetchSeasons = async () => {
             try {
                 const token = localStorage.getItem('authToken');
@@ -129,12 +113,10 @@ export default function App() {
                     }
                 });
 
-                // ❗️ ВИПРАВЛЕНА ЛОГІКА ОБРОБКИ ❗️
                 if (response.ok) {
                     const data = await response.json();
                     setSeasons(data);
                 } else {
-                    // Обробляємо помилки, ТІЛЬКИ ЯКЩО response НЕ ok
                     if (response.status === 401) {
                         setToken(null);
                         setError("Сесія застаріла, увійдіть знову.");
@@ -147,19 +129,13 @@ export default function App() {
             }
         };
 
-        // --- ГОЛОВНА ЛОГІКА ЦЬОГО USEEFFECT ---
         if (!token) {
-            // Якщо токен не встановлений, єдине, що ми робимо - перевіряємо сесію
             checkAuthStatus();
         } else {
-            // Якщо токен ВЖЕ є (з checkAuthStatus або після логіну),
-            // ми завантажуємо сезони
             fetchSeasons();
         }
-    }, [token, fetchTrigger]); // Залежимо від 'token' та 'fetchTrigger'
+    }, [token, fetchTrigger]);
 
-
-    // --- ІНШІ ФУНКЦІЇ-ОБРОБНИКИ (без змін) ---
     function handleDriverAdded() {
         setIsAddingDriver(false);
         setSelectedSeason(null);
@@ -175,7 +151,7 @@ export default function App() {
     function handleRaceAdded() {
         setIsAddingRace(false);
         setSelectedSeason(null);
-        setFetchTrigger(p => p + 1); // <--- Додав тригер на випадок, якщо setSelectedSeason(null) не спрацює
+        setFetchTrigger(p => p + 1);
     }
 
     function handleSeasonAdded() {
@@ -216,7 +192,6 @@ export default function App() {
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/teams/${teamId}`, {
                 method: 'DELETE',
                 headers: {
-                    // 2. Додати заголовок авторизації
                     'Authorization': `Bearer ${token}`
                 }
             });
@@ -244,7 +219,6 @@ export default function App() {
             const response = await fetch(`${API_BASE_URL}/api/teams/${teamId}/drivers/${driverId}`, {
                 method: 'DELETE',
                 headers: {
-                    // 2. Додати заголовок авторизації
                     'Authorization': `Bearer ${token}`
                 }
             });
@@ -274,7 +248,6 @@ export default function App() {
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}`, {
                 method: 'DELETE',
                 headers: {
-                    // 2. Додати заголовок авторизації
                     'Authorization': `Bearer ${token}`
                 }
             });
@@ -325,28 +298,25 @@ export default function App() {
                 setError(null);
             } else {
                 const errorText = await response.text();
-                toast.error(errorText || "Помилка входу"); // <--- Використовуємо toast
+                toast.error(errorText || "Помилка входу");
             }
         } catch (e) {
-            toast.error("Не вдалося з'єднатися з сервером"); // <--- Використовуємо toast
+            toast.error("Не вдалося з'єднатися з сервером");
         }
     };
 
     const logout = useCallback(async () => {
         try {
             const token = localStorage.getItem('authToken');
-            // 1. Викликаємо C# ендпоінт, щоб він видалив HttpOnly куку
             await fetch(`${API_BASE_URL}/api/users/logout`, {
                 method: 'POST',
                 headers: {
-                    // 2. Додати заголовок авторизації
                     'Authorization': `Bearer ${token}`
                 }
             });
         } catch (e) {
             console.warn('Logout request failed (this is often okay)', e);
         } finally {
-            // 2. Незалежно від успіху, скидаємо ВЕСЬ стан React
             setToken(null);
             setSeasons(null);
             setSelectedSeason(null);
@@ -355,16 +325,10 @@ export default function App() {
             setIsAddingSeason(false);
             setIsAddingRace(false);
 
-            // 3. Повідомляємо користувача
             toast('Ви вийшли з акаунту');
         }
     }, [API_BASE_URL]);
 
-    // ----------------------------
-    // --- РЕНДЕРИНГ (ВИГЛЯД) ---
-    // ----------------------------
-
-    // 1. Помилка
     if (error) {
         return (
             <>
@@ -381,12 +345,10 @@ export default function App() {
         );
     }
 
-    // 2. "Воротар" - Перевірка сесії
     if (isCheckingAuth) {
         return <AppStateScreen message="Перевірка сесії..."/>;
     }
 
-    // 3. Не залогінений
     if (!token) {
         return (
             <>
@@ -400,9 +362,6 @@ export default function App() {
         );
     }
 
-    // --- ЗАЛОГІНЕНИЙ КОРИСТУВАЧ ---
-
-    // 4. Форми-модалки (мають вищий пріоритет)
     if (isAddingSeason) {
         return <AddSeasonForm
             onSeasonAdded={handleSeasonAdded}
@@ -447,12 +406,10 @@ export default function App() {
         />
     }
 
-    // 5. Завантаження даних (якщо токен є, але сезонів ще немає)
     if (!seasons) {
         return <AppStateScreen message="Завантаження сезонів..."/>;
     }
 
-    // 6. ГОЛОВНИЙ ЕКРАН (Все завантажено)
     return (
         <>
             <AppToaster/>
@@ -468,7 +425,7 @@ export default function App() {
                         setSelectedSeason(null);
                         setSelectedRace(null);
                     }}
-                    onLogout={logout} // <--- Тобі потрібно буде передати сюди 'logout'
+                    onLogout={logout}
                 />
 
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">

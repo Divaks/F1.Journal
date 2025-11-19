@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 
-// Логіка залишається тією ж самою
 function Register({ onSwitchToLogin }) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false); // Додав стан для кнопки
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-        setIsSubmitting(true); // Блокуємо кнопку
+        setIsSubmitting(true);
 
         try {
-            const response = await fetch('https://f1-journal.onrender.com/api/users', { // Потрібно буде передати API_BASE_URL
+            const response = await fetch('https://f1-journal.onrender.com/api/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,23 +32,19 @@ function Register({ onSwitchToLogin }) {
             console.log(err);
             setError("Помилка зʼєднання.");
         } finally {
-            setIsSubmitting(false); // Розблокуємо кнопку
+            setIsSubmitting(false);
         }
     };
 
     return (
-        // 1. Такий самий повноекранний контейнер
         <div className="min-h-screen bg-zinc-950 text-gray-200 flex flex-col justify-center items-center p-4">
 
-            {/* 2. Такий самий логотип */}
             <h1 className="text-4xl font-bold text-gray-100 mb-2">
                 F1<span className="text-red-600">.</span>Journal
             </h1>
 
-            {/* 3. Така сама картка */}
             <div className="w-full max-w-md bg-zinc-900 rounded-2xl shadow-2xl p-8 border border-zinc-800">
 
-                {/* 4. Заголовок та підзаголовок */}
                 <h2 className="text-3xl font-bold text-center text-gray-100 mb-2">
                     Створити акаунт
                 </h2>
@@ -57,12 +52,10 @@ function Register({ onSwitchToLogin }) {
                     Приєднуйтесь до спільноти.
                 </p>
 
-                {/* Повідомлення про помилку */}
                 {error && <p className="text-red-500 text-center mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
-                    {/* 5. Такі самі поля вводу */}
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-zinc-400 mb-2">Ім'я</label>
                         <input
@@ -104,14 +97,13 @@ function Register({ onSwitchToLogin }) {
 
                     <button
                         type="submit"
-                        disabled={isSubmitting} // Блокуємо кнопку під час запиту
+                        disabled={isSubmitting}
                         className="w-full py-3 mt-2 bg-red-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:bg-zinc-600"
                     >
                         {isSubmitting ? 'Створення...' : 'Зареєструватися'}
                     </button>
                 </form>
 
-                {/* 6. Посилання на вхід */}
                 <div className="mt-8 text-center">
                     <p className="text-zinc-400">
                         Вже маєте акаунт?{' '}
