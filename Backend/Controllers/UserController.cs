@@ -24,7 +24,6 @@ public class UserController : ControllerBase
         _configuration = configuration;
     }
 
-    // LOGIN → повертаємо JWT у JSON
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
@@ -35,11 +34,9 @@ public class UserController : ControllerBase
         
         var token = GenerateJwtToken(user);
 
-        // Повертаємо токен у JSON для зберігання у localStorage
         return Ok(new { token });
     }
 
-    // REGISTER → створюємо користувача
     [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] UserForCreationDto userDto)
@@ -72,7 +69,6 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetUsers), new { id = userToReturn.Id }, userToReturn);
     }
 
-    // LIST USERS → для тестування / адміністрування
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
@@ -87,7 +83,6 @@ public class UserController : ControllerBase
         return Ok(usersDto);
     }
 
-    // CHECK AUTH → приклад захищеного маршруту
     [HttpGet("check-auth")]
     [Authorize]
     public IActionResult CheckAuth()
@@ -96,25 +91,23 @@ public class UserController : ControllerBase
 
         if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(); // На всякий випадок
+            return Unauthorized();
         }
         
         var user = _db.Users.Find(userId); 
         if (user != null)
         {
-            var newToken = GenerateJwtToken(user); // Генеруємо новий
-            return Ok(new { isAuthenticated = true, token = newToken }); // Повертаємо новий токен
+            var newToken = GenerateJwtToken(user);
+            return Ok(new { isAuthenticated = true, token = newToken });
         }
         
         return Ok(new { isAuthenticated = true });
     }
 
-    // LOGOUT → локально на фронті видаляємо токен
     [HttpPost("logout")]
     [AllowAnonymous]
     public IActionResult Logout()
     {
-        // Сервер не працює з cookie, фронт сам видаляє токен
         return Ok(new { message = "Logged out successfully" });
     }
 
