@@ -196,7 +196,7 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
                         Скасувати
                     </button>
                     <button type="submit" /* disabled={isSubmitting} */ className="py-2 px-5 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all disabled:bg-zinc-600">
-                        {isSubmitting ? 'Додавання...' : 'Додати Пілота'}                        Додати Пілота
+                        {isSubmitting ? 'Додавання...' : 'Додати Пілота'}
                     </button>
                 </div>
             </form>

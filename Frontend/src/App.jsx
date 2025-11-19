@@ -57,13 +57,14 @@ const AppStateScreen = ({ message, isError = false, onRetry }) => (
 );
 
 export default function App() {
+    const [token, setToken] = useState(localStorage.getItem('authToken') || null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
     const [seasons, setSeasons] = useState(null);
     const [selectedSeason, setSelectedSeason] = useState(null);
     const [selectedRace, setSelectedRace] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [error, setError] = useState(null);
-    const [token, setToken] = useState(null);
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [isRegistering, setIsRegistering] = useState(false);
     const [isViewingDashboard, setIsViewingDashboard] = useState(false);
     const [isAddingSeason, setIsAddingSeason] = useState(false);
@@ -73,12 +74,12 @@ export default function App() {
     const [isAddingTeam, setIsAddingTeam] = useState(false);
 
     useEffect(() => {
-
         const checkAuthStatus = async () => {
             setIsCheckingAuth(true);
-            const token = localStorage.getItem('authToken');
+            const localToken = localStorage.getItem('authToken');
 
-            if (!token) {
+            if (!localToken) {
+                setToken(null);
                 setIsCheckingAuth(false);
                 return;
             }
@@ -92,13 +93,14 @@ export default function App() {
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem('authToken', data.token);
-                    setToken("auth"); // Успіх!
-                } else if (response.status === 401) {
+                    setToken("auth");
+                } else {
                     localStorage.removeItem('authToken');
                     setToken(null);
                 }
             } catch (e) {
                 console.error("Auth check failed", e);
+                setToken(null);
             } finally {
                 setIsCheckingAuth(false);
             }
@@ -116,6 +118,12 @@ export default function App() {
                 if (response.ok) {
                     const data = await response.json();
                     setSeasons(data);
+                    if (selectedSeason) {
+                        const updatedSeason = data.find(s => s.id === selectedSeason.id);
+                        if (updatedSeason) {
+                            setSelectedSeason(updatedSeason);
+                        }
+                    }
                 } else {
                     if (response.status === 401) {
                         setToken(null);
@@ -129,12 +137,17 @@ export default function App() {
             }
         };
 
-        if (!token) {
+        if (token && token !== "auth") {
             checkAuthStatus();
-        } else {
+        }
+        else if (token === "auth") {
             fetchSeasons();
         }
-    }, [token, fetchTrigger]);
+
+        if (!token || token === "auth") {
+            setIsCheckingAuth(false);
+        }
+    }, [token, fetchTrigger, selectedSeason]);
 
     function handleDriverAdded() {
         setIsAddingDriver(false);
