@@ -37,10 +37,9 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                     "https://f1journal.netlify.app"
-                    ) 
+                )
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowAnyMethod();
         });
 });
 
