@@ -140,10 +140,6 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
             );
         }
 
-        if(onAddTeamClick){
-            return <AddTeamForm onAddTeamClick={onAddTeamClick} />
-        }
-
         // 3. Основна форма (якщо команди є)
         return (
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">

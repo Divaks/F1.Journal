@@ -438,6 +438,15 @@ export default function App() {
         />
     }
 
+    if (isAddingDriver && selectedSeason && !selectedTeam) {
+        return <AddTeamForm
+            onTeamAdded={handleTeamAdded}
+            onCancel={() => setIsAddingTeam(false)}
+            API_BASE_URL={API_BASE_URL}
+            seasonId={selectedSeason.id}
+        />
+    }
+
     // 5. Завантаження даних (якщо токен є, але сезонів ще немає)
     if (!seasons) {
         return <AppStateScreen message="Завантаження сезонів..."/>;

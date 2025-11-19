@@ -17,7 +17,8 @@ function RaceList({
                       onAddTeamClick,     // <--- НОВИЙ ПРОП
                       onDeleteTeamClick,  // <--- НОВИЙ ПРОП
                       onAddDriverClick,   // <--- НОВИЙ ПРОП
-                      onDeleteDriverClick // <--- НОВИЙ ПРОП
+                      onDeleteDriverClick
+                      // <--- НОВИЙ ПРОП
                   }) {
 
     // НОВИЙ СТАН: Керує тим, яка вкладка активна
