@@ -57,14 +57,13 @@ const AppStateScreen = ({ message, isError = false, onRetry }) => (
 );
 
 export default function App() {
-    const [token, setToken] = useState(localStorage.getItem('authToken') || null);
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
     const [seasons, setSeasons] = useState(null);
     const [selectedSeason, setSelectedSeason] = useState(null);
     const [selectedRace, setSelectedRace] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [error, setError] = useState(null);
+    const [token, setToken] = useState(null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [isRegistering, setIsRegistering] = useState(false);
     const [isViewingDashboard, setIsViewingDashboard] = useState(false);
     const [isAddingSeason, setIsAddingSeason] = useState(false);
@@ -74,12 +73,12 @@ export default function App() {
     const [isAddingTeam, setIsAddingTeam] = useState(false);
 
     useEffect(() => {
+
         const checkAuthStatus = async () => {
             setIsCheckingAuth(true);
-            const localToken = localStorage.getItem('authToken');
+            const token = localStorage.getItem('authToken');
 
-            if (!localToken) {
-                setToken(null);
+            if (!token) {
                 setIsCheckingAuth(false);
                 return;
             }
@@ -87,20 +86,19 @@ export default function App() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/users/check-auth`, {
                     headers: {
-                        'Authorization': `Bearer ${localToken}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem('authToken', data.token);
-                    setToken("auth");
-                } else {
+                    setToken("auth"); // Успіх!
+                } else if (response.status === 401) {
                     localStorage.removeItem('authToken');
                     setToken(null);
                 }
             } catch (e) {
                 console.error("Auth check failed", e);
-                setToken(null);
             } finally {
                 setIsCheckingAuth(false);
             }
@@ -118,12 +116,6 @@ export default function App() {
                 if (response.ok) {
                     const data = await response.json();
                     setSeasons(data);
-                    if (selectedSeason) {
-                        const updatedSeason = data.find(s => s.id === selectedSeason.id);
-                        if (updatedSeason) {
-                            setSelectedSeason(updatedSeason);
-                        }
-                    }
                 } else {
                     if (response.status === 401) {
                         setToken(null);
@@ -137,30 +129,28 @@ export default function App() {
             }
         };
 
-        if (token && token !== "auth") {
+        if (!token) {
             checkAuthStatus();
-        }
-        else if (token === "auth") {
+        } else {
             fetchSeasons();
         }
-        else if (!token) {
-            setIsCheckingAuth(false);
-        }
-
-    }, [token, fetchTrigger, selectedSeason]);
+    }, [token, fetchTrigger]);
 
     function handleDriverAdded() {
         setIsAddingDriver(false);
+        setSelectedSeason(null);
         setFetchTrigger(p => p + 1);
     }
 
     function handleTeamAdded() {
         setIsAddingTeam(false);
         setFetchTrigger(prev => prev + 1);
+        setSelectedSeason(null);
     }
 
     function handleRaceAdded() {
         setIsAddingRace(false);
+        setSelectedSeason(null);
         setFetchTrigger(p => p + 1);
     }
 
@@ -372,6 +362,23 @@ export default function App() {
         );
     }
 
+    if (isAddingSeason) {
+        return <AddSeasonForm
+            onSeasonAdded={handleSeasonAdded}
+            onCancel={() => setIsAddingSeason(false)}
+            API_BASE_URL={API_BASE_URL}
+        />;
+    }
+
+    if (isAddingRace && selectedSeason) {
+        return <AddRaceForm
+            onRaceAdded={handleRaceAdded}
+            onCancel={() => setIsAddingRace(false)}
+            API_BASE_URL={API_BASE_URL}
+            seasonId={selectedSeason.id}
+        />;
+    }
+
     if (isAddingTeam && selectedSeason && selectedSeason.id) {
         return <AddTeamForm
             onTeamAdded={handleTeamAdded}
@@ -391,76 +398,80 @@ export default function App() {
         />
     }
 
-    if (isAddingRace && selectedSeason) {
-        return <AddRaceForm
-            onRaceAdded={handleRaceAdded}
-            onCancel={() => setIsAddingRace(false)}
-            API_BASE_URL={API_BASE_URL}
-            seasonId={selectedSeason.id}
-        />;
-    }
+    if (isAddingDriver && selectedSeason && !selectedTeam) {
+        return <AddTeamForm
+            onTeamAdded={handleTeamAdded}
+            onCancel={() => setIsAddingTeam(false)}
+            if (isAddingRace && selectedSeason) {
+            return <AddRaceForm
+                onRaceAdded={handleRaceAdded}
+                onCancel={() => setIsAddingRace(false)}
+                API_BASE_URL={API_BASE_URL}
+                seasonId={selectedSeason.id}
+            />
+            />;
+        }
 
-    if (isAddingSeason) {
-        return <AddSeasonForm
-            onSeasonAdded={handleSeasonAdded}
-            onCancel={() => setIsAddingSeason(false)}
-            API_BASE_URL={API_BASE_URL}
-        />;
-    }
+        if (isAddingSeason) {
+            return <AddSeasonForm
+                onSeasonAdded={handleSeasonAdded}
+                onCancel={() => setIsAddingSeason(false)}
+                API_BASE_URL={API_BASE_URL}
+            />;
+        }
 
-    if (!seasons) {
-        return <AppStateScreen message="Завантаження сезонів..."/>;
-    }
+        if (!seasons) {
+            return <AppStateScreen message="Завантаження сезонів..."/>;
+        }
 
-    return (
-        <>
-            <AppToaster/>
-            <div className="min-h-screen bg-zinc-950 text-gray-100">
-                <Navbar
-                    onViewDashboard={() => {
-                        setIsViewingDashboard(true);
-                        setSelectedSeason(null);
-                        setSelectedRace(null);
-                    }}
-                    onViewSeasons={() => {
-                        setIsViewingDashboard(false);
-                        setSelectedSeason(null);
-                        setSelectedRace(null);
-                    }}
-                    onLogout={logout}
-                />
+        return (
+            <>
+                <AppToaster/>
+                <div className="min-h-screen bg-zinc-950 text-gray-100">
+                    <Navbar
+                        onViewDashboard={() => {
+                            setIsViewingDashboard(true);
+                            setSelectedSeason(null);
+                            setSelectedRace(null);
+                        }}
+                        onViewSeasons={() => {
+                            setIsViewingDashboard(false);
+                            setSelectedSeason(null);
+                            setSelectedRace(null);
+                        }}
+                        onLogout={logout}
+                    />
 
-                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-                    {isViewingDashboard ? (
-                        <Dashboard/>
-                    ) : (
-                        selectedSeason === null
-                            ? <SeasonList
-                                seasons={seasons}
-                                onSeasonClick={handleSeasonClick}
-                                onAddSeasonClick={() => setIsAddingSeason(true)}
-                                onDeleteSeasonClick={handleDeleteSeason}
-                            />
-                            : selectedRace === null
-                                ? <RaceList
-                                    season={selectedSeason}
-                                    onBackList={handleBackToSeasons}
-                                    onRaceClick={handleRaceClick}
-                                    onAddRaceClick={() => setIsAddingRace(true)}
-                                    onDeleteRaceClick={handleDeleteRace}
-                                    onAddTeamClick={() => setIsAddingTeam(true)}
-                                    onDeleteTeamClick={handleDeleteTeam}
-                                    onAddDriverClick={() => setIsAddingDriver(true)}
-                                    onDeleteDriverClick={handleDeleteDriver}
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+                        {isViewingDashboard ? (
+                            <Dashboard/>
+                        ) : (
+                            selectedSeason === null
+                                ? <SeasonList
+                                    seasons={seasons}
+                                    onSeasonClick={handleSeasonClick}
+                                    onAddSeasonClick={() => setIsAddingSeason(true)}
+                                    onDeleteSeasonClick={handleDeleteSeason}
                                 />
-                                : <ReviewPage
-                                    race={selectedRace}
-                                    onBackToRaces={handleBackToRaces}
-                                    onReviewSubmit={handleReviewSubmitted}
-                                />
-                    )}
-                </main>
-            </div>
-        </>
-    );
-};
+                                : selectedRace === null
+                                    ? <RaceList
+                                        season={selectedSeason}
+                                        onBackList={handleBackToSeasons}
+                                        onRaceClick={handleRaceClick}
+                                        onAddRaceClick={() => setIsAddingRace(true)}
+                                        onDeleteRaceClick={handleDeleteRace}
+                                        onAddTeamClick={() => setIsAddingTeam(true)}
+                                        onDeleteTeamClick={handleDeleteTeam}
+                                        onAddDriverClick={() => setIsAddingDriver(true)}
+                                        onDeleteDriverClick={handleDeleteDriver}
+                                    />
+                                    : <ReviewPage
+                                        race={selectedRace}
+                                        onBackToRaces={handleBackToRaces}
+                                        onReviewSubmit={handleReviewSubmitted}
+                                    />
+                        )}
+                    </main>
+                </div>
+            </>
+        );
