@@ -12,7 +12,6 @@ function Register({ onSwitchToLogin }) {
         e.preventDefault();
         setError(null);
         setIsSubmitting(true); // Блокуємо кнопку
-        const token = localStorage.getItem('authToken');
 
         try {
             const response = await fetch('https://f1-journal.onrender.com/api/users', { // Потрібно буде передати API_BASE_URL
