@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens; 
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +36,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                     "https://localhost:5173/",
-                    "https://f1journal.netlify.app"
+                    "https://f1journal.pages.dev"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod();
