@@ -394,6 +394,7 @@ export default function App() {
             onCancel={() => setIsAddingDriver(false)}
             API_BASE_URL={API_BASE_URL}
             seasonId={selectedSeason.id}
+            onAddTeamClick={() => setIsAddingTeam(true)}
         />
     }
 
