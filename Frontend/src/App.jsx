@@ -420,7 +420,7 @@ export default function App() {
         />;
     }
 
-    if (isAddingTeam && selectedSeason) {
+    if (isAddingTeam && selectedSeason && selectedSeason.id) {
         return <AddTeamForm
             onTeamAdded={handleTeamAdded}
             onCancel={() => setIsAddingTeam(false)}

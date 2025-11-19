@@ -15,6 +15,12 @@ function AddTeamForm({ onTeamAdded, onCancel, API_BASE_URL, seasonId }) {
         setIsSubmitting(true);
         const token = localStorage.getItem('authToken');
 
+        if (!seasonId || seasonId === 0) {
+            toast.error("Помилка: неможливо створити команду без обраного сезону.");
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/seasons/${seasonId}/teams`, { // Переконайся, що API_BASE_URL передається з App.jsx
                 method: 'POST',
