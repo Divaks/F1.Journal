@@ -8,8 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
-
 
 namespace F1Journal.Controllers;
 
@@ -26,60 +24,22 @@ public class UserController : ControllerBase
         _configuration = configuration;
     }
 
+    // LOGIN → повертаємо JWT у JSON
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email);
         if (user == null || !BCrypt.Net.BCrypt.Verify(userDto.Password, user.PasswordHash))
-            return  Unauthorized("Невірний пароль або електронна адреса");   
+            return Unauthorized(new { message = "Невірний пароль або електронна адреса" });   
         
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            }),
-            Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = creds
-        };
-        
-        JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-        var token =  tokenHandler.CreateToken(tokenDescriptor);
-        var tokenString = tokenHandler.WriteToken(token);
+        var token = GenerateJwtToken(user);
 
-        CookieOptions cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None,
-            MaxAge = TimeSpan.FromDays(7)
-        };
-        
-        Response.Cookies.Append("jwt", tokenString, cookieOptions);
-        
-        return Ok("Success");
+        // Повертаємо токен у JSON для зберігання у localStorage
+        return Ok(new { token });
     }
 
-    
-    [HttpGet]
-    public async Task<IActionResult> GetUsers()
-    {
-        var usersFromDb = await _db.Users.ToListAsync();
-        
-        var usersDto = usersFromDb.Select(user => new
-        {
-            Id = user.Id,
-            Name = user.Name,
-            Email = user.Email
-        }).ToList();
-        
-        return Ok(usersDto);
-    }
-
+    // REGISTER → створюємо користувача
     [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] UserForCreationDto userDto)
@@ -103,7 +63,23 @@ public class UserController : ControllerBase
         
         return CreatedAtAction(nameof(GetUsers), new { id = userToReturn.Id }, userToReturn);
     }
-    
+
+    // LIST USERS → для тестування / адміністрування
+    [HttpGet]
+    public async Task<IActionResult> GetUsers()
+    {
+        var usersFromDb = await _db.Users.ToListAsync();
+        var usersDto = usersFromDb.Select(user => new
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email
+        }).ToList();
+        
+        return Ok(usersDto);
+    }
+
+    // CHECK AUTH → приклад захищеного маршруту
     [HttpGet("check-auth")]
     [Authorize]
     public IActionResult CheckAuth()
@@ -111,19 +87,34 @@ public class UserController : ControllerBase
         return Ok(new { isAuthenticated = true });
     }
 
-    [HttpPost("logout")] 
-    public async Task<IActionResult> Logout()
+    // LOGOUT → локально на фронті видаляємо токен
+    [HttpPost("logout")]
+    [AllowAnonymous]
+    public IActionResult Logout()
     {
-        CookieOptions cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None,
-            MaxAge = TimeSpan.FromDays(-1)
-        };   
-        
-        Response.Cookies.Append("jwt", "", cookieOptions);
-    
+        // Сервер не працює з cookie, фронт сам видаляє токен
         return Ok(new { message = "Logged out successfully" });
+    }
+
+    // ======== Допоміжні методи ========
+    private string GenerateJwtToken(User user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email)
+            }),
+            Expires = DateTime.UtcNow.AddDays(7),
+            SigningCredentials = creds
+        };
+        
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 }
