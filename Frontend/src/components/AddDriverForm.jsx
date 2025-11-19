@@ -111,9 +111,7 @@ export default function AddDriverForm({ onDriverAdded, onCancel, API_BASE_URL, s
                     </p>
                     <div className="flex flex-col gap-4 mt-8">
                         <button
-                            onClick={() => {
-                                console.log("КНОПКА НАТИСНУТА!");
-                            }}
+                            onClick={onAddTeamClick}
                             className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-xl hover:bg-red-700 transition-all focus:ring-2 focus:ring-red-500"
                         >
                             + Додати Команду
