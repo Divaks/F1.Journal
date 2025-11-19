@@ -15,7 +15,6 @@ namespace F1Journal.Controllers;
 
 [ApiController]
 [Route("api/users")]
-[EnableCors("AllowFrontend")]
 public class UserController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -82,6 +81,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] UserForCreationDto userDto)
     {
         var newUser = new User
