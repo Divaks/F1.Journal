@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Render ставить PORT, тому треба дозволити слухати цей порт
-ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+ENV ASPNETCORE_URLS=http://+:$PORT
 
 # Запуск
 ENTRYPOINT ["dotnet", "F1Journal.dll"]
