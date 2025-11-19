@@ -44,6 +44,14 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] UserForCreationDto userDto)
     {
+        var existingUser = await _db.Users
+            .AnyAsync(u => u.Email == userDto.Email);
+    
+        if (existingUser)
+        {
+            return Conflict("Користувач з цією електронною адресою вже зареєстрований."); 
+        }
+        
         var newUser = new User
         {
             Name = userDto.Name,
