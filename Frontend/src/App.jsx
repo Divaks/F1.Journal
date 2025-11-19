@@ -87,7 +87,7 @@ export default function App() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/users/check-auth`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${localToken}`
                     }
                 });
                 if (response.ok) {
@@ -143,10 +143,10 @@ export default function App() {
         else if (token === "auth") {
             fetchSeasons();
         }
-
-        if (!token || token === "auth") {
+        else if (!token) {
             setIsCheckingAuth(false);
         }
+
     }, [token, fetchTrigger, selectedSeason]);
 
     function handleDriverAdded() {
