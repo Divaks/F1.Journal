@@ -138,19 +138,16 @@ export default function App() {
 
     function handleDriverAdded() {
         setIsAddingDriver(false);
-        setSelectedSeason(null);
         setFetchTrigger(p => p + 1);
     }
 
     function handleTeamAdded() {
         setIsAddingTeam(false);
         setFetchTrigger(prev => prev + 1);
-        setSelectedSeason(null);
     }
 
     function handleRaceAdded() {
         setIsAddingRace(false);
-        setSelectedSeason(null);
         setFetchTrigger(p => p + 1);
     }
 
@@ -362,23 +359,6 @@ export default function App() {
         );
     }
 
-    if (isAddingSeason) {
-        return <AddSeasonForm
-            onSeasonAdded={handleSeasonAdded}
-            onCancel={() => setIsAddingSeason(false)}
-            API_BASE_URL={API_BASE_URL}
-        />;
-    }
-
-    if (isAddingRace && selectedSeason) {
-        return <AddRaceForm
-            onRaceAdded={handleRaceAdded}
-            onCancel={() => setIsAddingRace(false)}
-            API_BASE_URL={API_BASE_URL}
-            seasonId={selectedSeason.id}
-        />;
-    }
-
     if (isAddingTeam && selectedSeason && selectedSeason.id) {
         return <AddTeamForm
             onTeamAdded={handleTeamAdded}
@@ -398,80 +378,76 @@ export default function App() {
         />
     }
 
-    if (isAddingDriver && selectedSeason && !selectedTeam) {
-        return <AddTeamForm
-            onTeamAdded={handleTeamAdded}
-            onCancel={() => setIsAddingTeam(false)}
-            if (isAddingRace && selectedSeason) {
-            return <AddRaceForm
-                onRaceAdded={handleRaceAdded}
-                onCancel={() => setIsAddingRace(false)}
-                API_BASE_URL={API_BASE_URL}
-                seasonId={selectedSeason.id}
-            />
-            />;
-        }
+    if (isAddingRace && selectedSeason) {
+        return <AddRaceForm
+            onRaceAdded={handleRaceAdded}
+            onCancel={() => setIsAddingRace(false)}
+            API_BASE_URL={API_BASE_URL}
+            seasonId={selectedSeason.id}
+        />;
+    }
 
-        if (isAddingSeason) {
-            return <AddSeasonForm
-                onSeasonAdded={handleSeasonAdded}
-                onCancel={() => setIsAddingSeason(false)}
-                API_BASE_URL={API_BASE_URL}
-            />;
-        }
+    if (isAddingSeason) {
+        return <AddSeasonForm
+            onSeasonAdded={handleSeasonAdded}
+            onCancel={() => setIsAddingSeason(false)}
+            API_BASE_URL={API_BASE_URL}
+        />;
+    }
 
-        if (!seasons) {
-            return <AppStateScreen message="Завантаження сезонів..."/>;
-        }
+    if (!seasons) {
+        return <AppStateScreen message="Завантаження сезонів..."/>;
+    }
 
-        return (
-            <>
-                <AppToaster/>
-                <div className="min-h-screen bg-zinc-950 text-gray-100">
-                    <Navbar
-                        onViewDashboard={() => {
-                            setIsViewingDashboard(true);
-                            setSelectedSeason(null);
-                            setSelectedRace(null);
-                        }}
-                        onViewSeasons={() => {
-                            setIsViewingDashboard(false);
-                            setSelectedSeason(null);
-                            setSelectedRace(null);
-                        }}
-                        onLogout={logout}
-                    />
+    return (
+        <>
+            <AppToaster/>
+            <div className="min-h-screen bg-zinc-950 text-gray-100">
+                <Navbar
+                    onViewDashboard={() => {
+                        setIsViewingDashboard(true);
+                        setSelectedSeason(null);
+                        setSelectedRace(null);
+                    }}
+                    onViewSeasons={() => {
+                        setIsViewingDashboard(false);
+                        setSelectedSeason(null);
+                        setSelectedRace(null);
+                    }}
+                    onLogout={logout}
+                />
 
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-                        {isViewingDashboard ? (
-                            <Dashboard/>
-                        ) : (
-                            selectedSeason === null
-                                ? <SeasonList
-                                    seasons={seasons}
-                                    onSeasonClick={handleSeasonClick}
-                                    onAddSeasonClick={() => setIsAddingSeason(true)}
-                                    onDeleteSeasonClick={handleDeleteSeason}
+                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+                    {isViewingDashboard ? (
+                        <Dashboard/>
+                    ) : (
+                        selectedSeason === null
+                            ? <SeasonList
+                                seasons={seasons}
+                                onSeasonClick={handleSeasonClick}
+                                onAddSeasonClick={() => setIsAddingSeason(true)}
+                                onDeleteSeasonClick={handleDeleteSeason}
+                            />
+                            : selectedRace === null
+                                ? <RaceList
+                                    season={selectedSeason}
+                                    onBackList={handleBackToSeasons}
+                                    onRaceClick={handleRaceClick}
+                                    onAddRaceClick={() => setIsAddingRace(true)}
+                                    onDeleteRaceClick={handleDeleteRace}
+                                    onAddTeamClick={() => setIsAddingTeam(true)}
+                                    onDeleteTeamClick={handleDeleteTeam}
+                                    onAddDriverClick={() => setIsAddingDriver(true)}
+                                    onDeleteDriverClick={handleDeleteDriver}
                                 />
-                                : selectedRace === null
-                                    ? <RaceList
-                                        season={selectedSeason}
-                                        onBackList={handleBackToSeasons}
-                                        onRaceClick={handleRaceClick}
-                                        onAddRaceClick={() => setIsAddingRace(true)}
-                                        onDeleteRaceClick={handleDeleteRace}
-                                        onAddTeamClick={() => setIsAddingTeam(true)}
-                                        onDeleteTeamClick={handleDeleteTeam}
-                                        onAddDriverClick={() => setIsAddingDriver(true)}
-                                        onDeleteDriverClick={handleDeleteDriver}
-                                    />
-                                    : <ReviewPage
-                                        race={selectedRace}
-                                        onBackToRaces={handleBackToRaces}
-                                        onReviewSubmit={handleReviewSubmitted}
-                                    />
-                        )}
-                    </main>
-                </div>
-            </>
-        );
+                                : <ReviewPage
+                                    race={selectedRace}
+                                    onBackToRaces={handleBackToRaces}
+                                    onReviewSubmit={handleReviewSubmitted}
+                                />
+                    )}
+                </main>
+            </div>
+        </>
+    );
+}
