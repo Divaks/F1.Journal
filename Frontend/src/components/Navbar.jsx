@@ -1,6 +1,15 @@
 import React from 'react';
 
 function Navbar({ onViewDashboard, onViewSeasons, onLogout }) {
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const storedName = localStorage.getItem('userName'); // Перевірте, як саме ви зберігали ім'я при логіні
+        if (storedName) {
+            setUserName(storedName);
+        }
+    }, []);
+
     return (
         <header className="w-full border-b border-red-600/50 mb-8 sm:mb-12">
             <nav className="flex justify-between items-center max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
@@ -17,7 +26,7 @@ function Navbar({ onViewDashboard, onViewSeasons, onLogout }) {
                         className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-red-700 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
                         onClick={onViewDashboard}
                     >
-                        Мій Кабінет <span aria-hidden="true">👤</span>
+                        {userName || "Мій Кабінет"} <span aria-hidden="true">👤</span>
                     </button>
 
                     <button
