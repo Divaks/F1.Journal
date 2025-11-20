@@ -91,7 +91,7 @@ export default function App() {
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem('authToken', data.token);
-                    setToken("auth"); // Успіх!
+                    setToken("auth");
                 } else if (response.status === 401) {
                     localStorage.removeItem('authToken');
                     setToken(null);
@@ -410,6 +410,7 @@ export default function App() {
             onCancel={() => setIsAddingRace(false)}
             API_BASE_URL={API_BASE_URL}
             seasonId={selectedSeason.id}
+            seasonYear={selectedSeason.year}
         />;
     }
 

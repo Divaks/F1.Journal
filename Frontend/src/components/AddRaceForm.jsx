@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId }) {
+function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId, seasonYear }) {
     const [name, setName] = useState('');
     const [circuitName, setCircuitName] = useState('');
-    const [raceDate, setRaceDate] = useState('');
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [raceDate, setRaceDate] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,6 +44,12 @@ function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId }) {
             setIsSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        if (seasonYear) {
+            setRaceDate(`${seasonYear}-01-01`);
+        }
+    }, [seasonYear]);
 
     return (
         <div className="min-h-screen bg-zinc-950 text-gray-200 flex flex-col justify-center items-center p-4">
@@ -100,6 +106,8 @@ function AddRaceForm({ onRaceAdded, onCancel, API_BASE_URL, seasonId }) {
                             type="date"
                             id="race-date"
                             value={raceDate}
+                            min={`${seasonYear}-01-01`}
+                            max={`${seasonYear}-12-31`}
                             onChange={(e) => setRaceDate(e.target.value)}
                             required
                             className="w-full p-3 bg-zinc-800 text-gray-100 rounded-lg border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-red-600 transition-all [color-scheme:dark]"
