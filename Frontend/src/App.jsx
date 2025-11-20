@@ -60,7 +60,6 @@ export default function App() {
     const [seasons, setSeasons] = useState(null);
     const [selectedSeason, setSelectedSeason] = useState(null);
     const [selectedRace, setSelectedRace] = useState(null);
-    const [selectedTeam, setSelectedTeam] = useState(null);
     const [error, setError] = useState(null);
     const [token, setToken] = useState(null);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -136,6 +135,15 @@ export default function App() {
         }
     }, [token, fetchTrigger]);
 
+    useEffect(() => {
+        if (selectedSeason && seasons) {
+            const updatedSelectedSeason = seasons.find(s => s.id === selectedSeason.id);
+            if (updatedSelectedSeason) {
+                setSelectedSeason(updatedSelectedSeason);
+            }
+        }
+    }, [seasons]);
+
     function handleDriverAdded() {
         setIsAddingDriver(false);
         setFetchTrigger(p => p + 1);
@@ -167,11 +175,15 @@ export default function App() {
                 }
             });
             if (response.ok) {
-                if (selectedSeason && selectedSeason.races) {
-                    const updatedRaces = selectedSeason.races.filter(r => r.id !== raceId);
-                    const updatedSeason = {...selectedSeason, races: updatedRaces};
-                    setSelectedSeason(updatedSeason);
-                }
+                const updatedSeason = {
+                    ...selectedSeason,
+                    races: selectedSeason.races.filter(r => r.id !== raceId)
+                };
+                setSelectedSeason(updatedSeason);
+                setSeasons(prevSeasons =>
+                    prevSeasons.map(s => s.id === seasonId ? updatedSeason : s)
+                );
+
                 toast.success(`Гонка успішно видалена.`);
             } else {
                 const errorText = await response.text();
@@ -193,11 +205,16 @@ export default function App() {
                 }
             });
             if (response.ok) {
-                if (selectedSeason && selectedSeason.teams) {
-                    const updatedTeams = selectedSeason.teams.filter(t => t.id !== teamId);
-                    const updatedSeason = {...selectedSeason, teams: updatedTeams};
-                    setSelectedSeason(updatedSeason);
-                }
+                const updatedSeason = {
+                    ...selectedSeason,
+                    teams: selectedSeason.teams.filter(t => t.id !== teamId)
+                };
+
+                setSelectedSeason(updatedSeason);
+                setSeasons(prevSeasons =>
+                    prevSeasons.map(s => s.id === seasonId ? updatedSeason : s)
+                );
+
                 toast.success(`Команда успішно видалена.`);
             } else {
                 const errorText = await response.text();
@@ -221,12 +238,20 @@ export default function App() {
             });
 
             if (response.ok) {
-                setFetchTrigger(p => p + 1);
-                if (selectedTeam && selectedTeam.drivers) {
-                    const updatedDrivers = selectedTeam.drivers.filter(t => t.id !== driverId);
-                    const updatedTeam = {...selectedTeam, teams: updatedDrivers};
-                    setSelectedSeason(updatedTeam);
-                }
+                const updatedTeams = selectedSeason.teams.map(team => {
+                    if (team.id !== teamId) return team; // Не чіпаємо чужі команди
+                    return {
+                        ...team,
+                        drivers: team.drivers.filter(d => d.id !== driverId) // Видаляємо пілота
+                    };
+                });
+
+                const updatedSeason = { ...selectedSeason, teams: updatedTeams };
+
+                setSelectedSeason(updatedSeason);
+                setSeasons(prevSeasons =>
+                    prevSeasons.map(s => s.id === selectedSeason.id ? updatedSeason : s)
+                );
 
                 toast.success('Пілот успішно видалений.');
             } else {
