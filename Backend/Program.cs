@@ -36,7 +36,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                     "https://localhost:5173/",
-                    "https://f1journal.pages.dev"
+                    "https://60c3e315.f1journal.pages.dev"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod();
