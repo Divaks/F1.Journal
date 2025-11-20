@@ -291,6 +291,7 @@ export default function App() {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userName', data.name || data.email)
                 setToken("auth");
                 setError(null);
             } else {

@@ -4,7 +4,7 @@ function Navbar({ onViewDashboard, onViewSeasons, onLogout }) {
     const [userName, setUserName] = useState('');
 
     useEffect(() => {
-        const storedName = localStorage.getItem('userName'); // Перевірте, як саме ви зберігали ім'я при логіні
+        const storedName = localStorage.getItem('userName');
         if (storedName) {
             setUserName(storedName);
         }

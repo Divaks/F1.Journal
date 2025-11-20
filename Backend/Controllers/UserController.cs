@@ -34,7 +34,7 @@ public class UserController : ControllerBase
         
         var token = GenerateJwtToken(user);
 
-        return Ok(new { token });
+        return Ok(new { token = token, name = user.Name, email = user.Email });
     }
 
     [HttpPost]
