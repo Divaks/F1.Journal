@@ -25,33 +25,42 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<Season>()
-            .HasIndex(s => s.Year)
-            .IsUnique();
         
-        modelBuilder.Entity<Race>()
-            .HasIndex(r => new { r.Name, r.SeasonId })
-            .IsUnique();
-        modelBuilder.Entity<RaceReview>()
-            .HasIndex(r => new { r.RaceId, r.UserId })
-            .IsUnique();
-        modelBuilder.Entity<DriverPerformanceReview>()
-            .HasIndex(d => new { d.UserId, d.DriverId, d.RaceId})
-            .IsUnique();
-        modelBuilder.Entity<TeamPerformanceReview>()
-            .HasIndex(t => new { t.UserId, t.TeamId, t.RaceId })
-            .IsUnique();
-        modelBuilder.Entity<RaceResult>()
-            .HasIndex(r => new { r.DriverId, r.RaceId })
-            .IsUnique();
-        modelBuilder.Entity<Driver>()
-            .HasIndex(d => d.DriverNumber)
-            .IsUnique();
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
+        
+        modelBuilder.Entity<Season>()
+            .HasIndex(s => new { s.UserId, s.Year })
+            .IsUnique();
+        
+        modelBuilder.Entity<Race>()
+            .HasIndex(r => new { r.SeasonId, r.Name })
+            .IsUnique();
+        
+        
+        modelBuilder.Entity<RaceResult>()
+            .HasIndex(r => new { r.DriverId, r.RaceId })
+            .IsUnique();
+        
+        modelBuilder.Entity<Driver>()
+            .HasIndex(d => new { d.TeamId, d.Name })
+            .IsUnique();
+        
         modelBuilder.Entity<Team>()
-            .HasIndex(t => t.Name)
+            .HasIndex(t => new { t.SeasonId, t.Name })
+            .IsUnique();
+        
+        modelBuilder.Entity<RaceReview>()
+            .HasIndex(r => new { r.RaceId, r.UserId })
+            .IsUnique();
+        
+        modelBuilder.Entity<DriverPerformanceReview>()
+            .HasIndex(d => new { d.UserId, d.DriverId, d.RaceId})
+            .IsUnique();
+        
+        modelBuilder.Entity<TeamPerformanceReview>()
+            .HasIndex(t => new { t.UserId, t.TeamId, t.RaceId })
             .IsUnique();
     }
 }

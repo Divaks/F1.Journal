@@ -47,12 +47,10 @@ namespace F1Journal.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DriverNumber")
-                        .IsUnique();
-
-                    b.HasIndex("TeamId");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("TeamId", "Name")
+                        .IsUnique();
 
                     b.ToTable("Drivers");
                 });
@@ -116,11 +114,9 @@ namespace F1Journal.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SeasonId");
-
                     b.HasIndex("UserId");
 
-                    b.HasIndex("Name", "SeasonId")
+                    b.HasIndex("SeasonId", "Name")
                         .IsUnique();
 
                     b.ToTable("Races");
@@ -200,9 +196,7 @@ namespace F1Journal.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("Year")
+                    b.HasIndex("UserId", "Year")
                         .IsUnique();
 
                     b.ToTable("Seasons");
@@ -234,12 +228,10 @@ namespace F1Journal.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("SeasonId");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("SeasonId", "Name")
+                        .IsUnique();
 
                     b.ToTable("Teams");
                 });
