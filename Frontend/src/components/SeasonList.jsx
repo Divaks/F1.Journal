@@ -45,7 +45,7 @@ function SeasonList({ seasons, onSeasonClick, onAddSeasonClick, onDeleteSeasonCl
                    p-6
                    cursor-pointer
                    transition-all duration-300
-                   group                   // <--- Додаємо 'group'
+                   group
                    hover:bg-zinc-800
                    hover:border-red-600/50"
                         onClick={() => onSeasonClick(season)}
